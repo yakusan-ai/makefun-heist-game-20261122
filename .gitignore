@@ -1,0 +1,7 @@
+best-heist-game-20261122-0559-kit/
+out/
+artifacts/
+.env
+.env.*
+node_modules/
+*.log
