@@ -117,8 +117,11 @@ function drawGuard(ctx,guard,state) {
 function drawCamera(ctx,camera) {
   const disabled=camera.disabled>0,color=disabled?'#8994a4':PALETTE.cyan;
   ctx.save();ctx.translate(camera.x,camera.y);
-  ctx.fillStyle='#36475d';ctx.fillRect(-13,-16,26,10);
-  ctx.strokeStyle='#91abbf';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(0,-9);ctx.lineTo(0,0);ctx.stroke();
+  ctx.fillStyle='#36475d';
+  ctx.strokeStyle='#91abbf';ctx.lineWidth=4;ctx.beginPath();
+  if (camera.x>800) {ctx.fillRect(18,-13,10,26);ctx.moveTo(20,0);}
+  else {ctx.fillRect(-13,-18,26,10);ctx.moveTo(0,-10);}
+  ctx.lineTo(0,0);ctx.stroke();
   ctx.rotate(camera.angle);
   roundedBox(ctx,-12,-9,27,18,4,disabled?'#354354':'#b3d8de','#e0f3f4');
   ctx.fillStyle='#0d2437';ctx.fillRect(8,-7,9,14);

@@ -14,7 +14,7 @@ function createDemoPlan() {
   // Autopilot issues the same movement, interaction and gadget inputs as a human.
   return [
     {x:210,y:290,shot:'cover'}, {x:275,y:290,emp:true,shot:'tools'},
-    {x:390,y:330}, {x:445,y:330}, {x:445,y:290,shot:'alarm',wait:1.1},
+    {x:390,y:330}, {x:445,y:330}, {x:445,y:240,shot:'alarm',wait:1.5},
     {x:544,y:290,emp:true}, {x:599,y:290,collect:true},
     {x:546,y:330}, {x:390,y:330}, {x:275,y:340},
     {x:210,y:340,shot:'escape'}, {x:110,y:340}, {x:68,y:390},
@@ -31,9 +31,9 @@ function readDemoControls(dt) {
   if (arrived) {
     if (target.emp && !target.used) {useEmpPulse(state);target.used=true;}
     if (target.collect) collectNearbyLoot(state);
-    if (target.shot) state.demoScene=target.shot;
+    if (target.shot && (target.shot!=='alarm' || state.alarm>30)) state.demoScene=target.shot;
     target.elapsed=(target.elapsed || 0)+dt;
-    if (target.elapsed>(target.wait || .35)) plan.shift();
+    if (target.elapsed>(target.wait || .35) && (target.shot!=='alarm' || state.alarm>38)) plan.shift();
     return {};
   }
   return {dx:waypoint.x-player.x,dy:waypoint.y-player.y};
@@ -61,7 +61,7 @@ function frame(timestamp) {
     const controls=state.demo?readDemoControls(STEP):first?keyboard:{dx:keyboard.dx,dy:keyboard.dy};
     updateHeist(STEP,controls);accumulator-=STEP;first=false;
   }
-  pressedKeys.clear();
+  if (!first) pressedKeys.clear();
   renderHeist(context,state);
   requestAnimationFrame(frame);
 }
@@ -76,4 +76,5 @@ if (query.has('capture')) {
     if (state.demoScene===requested || state.status!=='playing') break;
   }
   renderHeist(context,state);
+  canvas.dataset.snapshot=JSON.stringify({status:state.status,time:state.time,alarm:state.alarm,seen:state.seen,carrying:state.player.carrying,loot:state.recovered,scene:state.demoScene,disabled:state.cameras.map(camera=>camera.disabled)});
 } else requestAnimationFrame(frame);
